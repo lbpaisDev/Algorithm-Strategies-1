@@ -104,6 +104,7 @@ int minimizeCost(){
             if(((pow(nArray[i].x - pArray[j].x, 2) + pow(nArray[i].y - pArray[j].y, 2)) < pow(tArray[nt-1].r, 2)) && pArray[j].covered == 0) {
                 covered++;
                 pArray[j].covered = 1;
+                cost += tArray[nt-1].c;
             }
         }
     }
