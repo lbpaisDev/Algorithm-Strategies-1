@@ -4,7 +4,7 @@
 #include <time.h>
 
 //DEBUG
-#define DEBUG 0
+#define DEBUG 1
 
 //Run time
 clock_t start, end;
@@ -143,15 +143,16 @@ int covered = 0;
 //Main algorithm
 int minimizeCost(){
     //Iterators
-    int i,j;
-
-    //Check if the solution is possible
-    int covered = 0;
-    for(i = 0; i < nn; i++){
-        for(j = 0; j < np; j++){
-            if(((pow(nArray[i].x - pArray[j].x, 2) + pow(nArray[i].y - pArray[j].y, 2)) < pow(tArray[nt-1].r, 2)) && pArray[j].covered == 0) {
-                covered++;
-                pArray[j].covered = 1;
+    int i, j;
+    for(i = 0; i < np; i++){
+        for(j = 0; j < nn; j++){
+            if(pArray[i].covered == 0){
+                double dist = pow((pArray[i].x - nArray[j].x), 2) + pow((pArray[i].y - nArray[j].y), 2);   
+                if(dist > pow(tArray[nt - 1].r, 2)){
+                    continue;
+                }else{
+                    covered++;
+                }
             }
         }
     }
@@ -159,48 +160,7 @@ int minimizeCost(){
         return -1;
     }
 
-    //Reset covered values
-    for(i = 0; i < np; i++){
-        pArray[i].covered = 0;
-    }
-
-     //Start with the cheapest antennas
-    int type = 0;
-    covered = 0;
-    while(type < nt){
-        //For each possible location
-        for(i = 0; i < nn; i++){
-            //Check how many listeners are covered by the cheapest antennas
-            for(j = 0; j < np; j++){
-                //Do the math only if a listener isn't already covered
-                if(pArray[j].covered == 0){
-                
-                    if(DEBUG == 1){
-                        printf("\n\n ----- DEBUG ----- 	\n\n");
-                        printP(pArray[j]);
-                        printN(nArray[i]);
-                        printT(tArray[type]);
-                        printf("\tCost: %d\n", cost);
-                        printf("\n\n\n\n");
-                    }
-
-                    if(pArray[j].x <= (nArray[i].x + tArray[type].r) || pArray[j].x <= (nArray[i].x - tArray[type].r) || pArray[j].x <= (nArray[i].y + tArray[type].r) || pArray[j].x <= (nArray[i].y - tArray[type].r)){
-                        covered++;
-                        pArray[j].covered = 1;
-                        //If it is it means we can use it and its optimal because its the cheapest
-                        cost += tArray[type].c;
-                    }
-                }
-            }
-            //Shortcut in case an antenna with the current location covers all the listeners
-            if(covered == np){
-                return cost;
-            }
-            covered = 0;
-        }
-        type++;
-    }
-    return cost;
+    return 1;
 }
 
 int main() {
@@ -223,10 +183,16 @@ int main() {
 
     //Final cost
     int finalCost = minimizeCost();
-    if(finalCost < 0){
+    if(finalCost <= 0){
         printf("no solution\n");
     }else{
         printf("%d\n", finalCost);
+    }
+
+    if(DEBUG == 1){
+        printParr(pArray, np);
+        printNarr(nArray, nn);
+        printTarr(tArray, nt);
     }
     
     //Measure runtime

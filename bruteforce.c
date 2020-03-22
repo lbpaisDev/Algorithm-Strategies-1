@@ -1,7 +1,12 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
-#define DEBUG 0
+#include <time.h>
+
+#define DEBUG 1
+
+//Run time
+clock_t start, end;
 
 //Structures
 //Listeners positions on the map
@@ -170,11 +175,21 @@ int minimizeCost(){
 }
 
 int main() {
+
+    //Measure runtime
+    start = clock();
+
     int finalCost = minimizeCost();
     if(finalCost < 0){
         printf("no solution\n");
     }else{
         printf("%d\n", finalCost);
+    }
+
+        //Measure runtime
+    end = clock();
+    if(DEBUG == 1){
+        printf("\n---Runtime: %f\n", ((double)(end - start)/CLOCKS_PER_SEC));
     }
     return 0;
 }
